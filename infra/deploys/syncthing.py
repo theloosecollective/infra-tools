@@ -1,6 +1,7 @@
 from pyinfra.api import deploy
 from pyinfra.operations import apt
 
+
 @deploy("Syncthing")
 def install():
     apt.packages(
