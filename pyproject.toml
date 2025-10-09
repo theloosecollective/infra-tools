@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["facts", "deploys", "operations"]
+packages = ["infra"]
 
 [tool.basedpyright]
 venvPath = "."
