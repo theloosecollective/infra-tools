@@ -4,7 +4,7 @@ from pyinfra.facts.files import FindInFile
 from pyinfra.facts.systemd import SystemdEnabled
 from pyinfra.facts.server import Users
 from pyinfra import host
-from deploys import docker
+from ..deploys import docker
 
 def check_ids(entries):
     sufficient = False
