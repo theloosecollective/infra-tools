@@ -1,0 +1,25 @@
+[project]
+name = "infra"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyinfra>=3.5.1",
+]
+
+[tool.basedpyright]
+venvPath = "."
+venv = ".venv"
+reportUnusedCallResult = false
+reportUnknownArgumentType = false
+reportPrivateImportUsage = false
+reportUnknownVariableType = false
+reportUnknownMemberType = false
+reportMissingTypeArgument = false
+reportAssignmentType = false
+reportUnannotatedClassAttribute = false
+reportImplicitOverride = false
+reportAny = false
+reportUnknownParameterType = false
+reportMissingParameterType = false
