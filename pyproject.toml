@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["infra.deploys", "infra.facts", "infra.operations"]
+packages = ["infra", "infra.deploys", "infra.facts", "infra.operations"]
 
 [tool.setuptools.package-data]
 "infra" = ["py.typed"]
