@@ -1,5 +1,10 @@
+from pathlib import Path
+
 from pyinfra.api import deploy
 from pyinfra.operations import files, systemd, server
+
+# Deploy the systemd unit file from template
+TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 @deploy("Binary Service")
 def install(
@@ -21,51 +26,19 @@ def install(
         args: Command-line arguments for the binary
         working_dir: Optional working directory for the service
     """
-    # Ensure env file exists (if it doesn't already)
-    files.file(
-        name=f"Ensure /etc/{service_name}.env exists",
-        path=f"/etc/{service_name}.env",
-        present=True,
-        mode="0644",
-        create_remote_dir=False,
-        _sudo=True,
-    )
-
-    # Build the systemd unit file content
-    unit_content_lines = [
-        "[Unit]",
-        f"Description={description}",
-        "After=network.target",
-        "",
-        "[Service]",
-    ]
-
-    if working_dir:
-        unit_content_lines.append(f"WorkingDirectory={working_dir}")
-
-    unit_content_lines.extend([
-        f"ExecStart=/opt/{service_name} {args}",
-        "ExecStop=/bin/kill -s QUIT $MAINPID",
-        f"EnvironmentFile=/etc/{service_name}.env",
-        "Restart=always",
-        "",
-        "[Install]",
-        "WantedBy=default.target",
-        "",
-    ])
-
-    # Deploy the systemd unit file using server.shell with heredoc
-    server.shell(
+    unit_file = files.template(
         name=f"Deploy systemd unit file for {service_name}",
-        commands=[
-            f"cat > /etc/systemd/system/{service_name}.service <<'EOF'\n" +
-            "\n".join(unit_content_lines) + "\nEOF"
-        ],
+        src=str(TEMPLATE_DIR / "service.j2"),
+        dest=f"/etc/systemd/system/{service_name}.service",
+        mode="0644",
+        service_name=service_name,
+        description=description,
+        args=args,
+        working_dir=working_dir,
         _sudo=True,
     )
 
-    # Deploy the environment file
-    files.put(
+    env_file = files.put(
         name=f"Deploy environment file for {service_name}",
         src=env_file_path,
         dest=f"/etc/{service_name}.env",
@@ -74,8 +47,7 @@ def install(
         _sudo=True,
     )
 
-    # Deploy the binary
-    files.put(
+    bin_file = files.put(
         name=f"Deploy binary for {service_name}",
         src=bin_path,
         dest=f"/opt/{service_name}",
@@ -84,19 +56,21 @@ def install(
         _sudo=True,
     )
 
-    # Reload systemd daemon
-    server.shell(
-        name="Reload systemd daemon",
-        commands=["systemctl daemon-reload"],
-        _sudo=True,
-    )
+    if unit_file.changed:
+        systemd.daemon_reload(_sudo=True)
 
-    # Enable and start the service
     systemd.service(
         name=f"Enable and start {service_name}",
         service=f"{service_name}.service",
         running=True,
         enabled=True,
-        restarted=True,
         _sudo=True,
     )
+
+    if env_file.changed or bin_file.changed:
+        systemd.service(
+            name=f"Restart {service_name}",
+            service=f"{service_name}.service",
+            restarted=True,
+            _sudo=True,
+        )
