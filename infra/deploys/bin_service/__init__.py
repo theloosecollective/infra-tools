@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pyinfra.api import deploy
-from pyinfra.operations import files, systemd, server
+from pyinfra.operations import files, systemd
 
 # Deploy the systemd unit file from template
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -14,6 +14,7 @@ def install(
     env_file_path: str,
     args: str = "",
     working_dir: str | None = None,
+    force_restart: bool = False,
 ):
     """
     Deploy a binary as a systemd service.
@@ -25,6 +26,7 @@ def install(
         env_file_path: Path to the environment file to deploy
         args: Command-line arguments for the binary
         working_dir: Optional working directory for the service
+        force_restart: Force a restart of the service if the binary or environment file has not changed
     """
     unit_file = files.template(
         name=f"Deploy systemd unit file for {service_name}",
@@ -67,7 +69,7 @@ def install(
         _sudo=True,
     )
 
-    if env_file.changed or bin_file.changed:
+    if env_file.changed or bin_file.changed or force_restart:
         systemd.service(
             name=f"Restart {service_name}",
             service=f"{service_name}.service",
