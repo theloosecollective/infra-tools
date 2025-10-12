@@ -3,7 +3,7 @@ Description={{ description }}
 After=network.target
 
 [Service]
-{% if working_dir %}
+{%- if working_dir %}
 WorkingDirectory={{ working_dir }}
 {% endif %}
 ExecStart=/opt/{{ service_name }} {{ args }}
