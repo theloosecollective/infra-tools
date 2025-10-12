@@ -20,6 +20,7 @@ packages = [
 [tool.setuptools.package-data]
 "infra_tools" = ["py.typed"]
 "infra_tools.deploys" = ["py.typed"]
+"infra_tools.deploys.bin_service" = ["templates/**/*.j2"]
 "infra_tools.facts" = ["py.typed"]
 "infra_tools.operations" = ["py.typed"]
 
