@@ -9,13 +9,13 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["infra", "infra.deploys", "infra.facts", "infra.operations"]
+packages = ["infra_tools", "infra_tools.deploys", "infra_tools.facts", "infra_tools.operations"]
 
 [tool.setuptools.package-data]
-"infra" = ["py.typed"]
-"infra.deploys" = ["py.typed"]
-"infra.facts" = ["py.typed"]
-"infra.operations" = ["py.typed"]
+"infra_tools" = ["py.typed"]
+"infra_tools.deploys" = ["py.typed"]
+"infra_tools.facts" = ["py.typed"]
+"infra_tools.operations" = ["py.typed"]
 
 [tool.basedpyright]
 venvPath = "."
