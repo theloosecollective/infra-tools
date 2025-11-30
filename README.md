@@ -1,6 +1,6 @@
 install:
 ```bash
-uv add git+https://github.com/theloosecollective/tootbox
+uv add git+https://github.com/theloosecollective/infra-tools
 ```
 
 update:
